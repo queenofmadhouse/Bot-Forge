@@ -1,5 +1,5 @@
 {
-  "name": "microgram",
+  "name": "Bot-Forge",
   "version": "1.0.0",
   "description": "Interactive Telegram Bot Builder Platform",
   "main": "index.js",

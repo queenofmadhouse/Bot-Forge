@@ -11,16 +11,16 @@ services:
     volumes:
       - mongodb_data:/data/db
     environment:
-      - MONGO_INITDB_DATABASE=microgram
+      - MONGO_INITDB_DATABASE=botforge
     networks:
-      - microgram-network
+      - Bot-Forge-network
 
   # API Gateway
   api-gateway:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: microgram-api-gateway
+    container_name: Bot-Forge-api-gateway
     restart: always
     ports:
       - "3000:3000"
@@ -38,14 +38,14 @@ services:
       - db-service
     command: node services/api-gateway/index.js
     networks:
-      - microgram-network
+      - Bot-Forge-network
 
   # User Service
   user-service:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: microgram-user-service
+    container_name: Bot-Forge-user-service
     restart: always
     environment:
       - NODE_ENV=production
@@ -56,14 +56,14 @@ services:
       - db-service
     command: node services/user-service/index.js
     networks:
-      - microgram-network
+      - Bot-Forge-network
 
   # Bot Builder Service
   bot-builder:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: microgram-bot-builder
+    container_name: Bot-Forge-bot-builder
     restart: always
     environment:
       - NODE_ENV=production
@@ -73,14 +73,14 @@ services:
       - db-service
     command: node services/bot-builder/index.js
     networks:
-      - microgram-network
+      - Bot-Forge-network
 
   # Bot Runtime Service
   bot-runtime:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: microgram-bot-runtime
+    container_name: Bot-Forge-bot-runtime
     restart: always
     environment:
       - NODE_ENV=production
@@ -90,7 +90,7 @@ services:
       - db-service
     command: node services/bot-runtime/index.js
     networks:
-      - microgram-network
+      - Bot-Forge-network
 
   # Database Service
   db-service:
@@ -102,12 +102,12 @@ services:
     environment:
       - NODE_ENV=production
       - DB_SERVICE_PORT=3004
-      - MONGO_URI=mongodb://mongodb:27017/microgram
+      - MONGO_URI=mongodb://mongodb:27017/botforge
     depends_on:
       - mongodb
     command: node services/db-service/index.js
     networks:
-      - microgram-network
+      - Bot-Forge-network
 
   # Client (React frontend)
   client:
@@ -121,10 +121,10 @@ services:
     depends_on:
       - api-gateway
     networks:
-      - microgram-network
+      - Bot-Forge-network
 
 networks:
-  microgram-network:
+  Bot-Forge-network:
     driver: bridge
 
 volumes:

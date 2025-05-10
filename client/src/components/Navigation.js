@@ -15,7 +15,7 @@ const Navigation = () => {
   return (
     <Navbar bg="primary" variant="dark" expand="lg">
       <Container>
-        <Navbar.Brand as={Link} to="/">Microgram</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/">Bot-Forge</Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarNav" />
         <Navbar.Collapse id="navbarNav">
           <Nav className="me-auto">

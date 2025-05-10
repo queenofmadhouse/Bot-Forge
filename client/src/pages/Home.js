@@ -9,7 +9,7 @@ const Home = () => {
   return (
     <Container>
       <div className="jumbotron">
-        <h1 className="display-4">Welcome to Microgram!</h1>
+        <h1 className="display-4">Welcome to Bot-Forge!</h1>
         <p className="lead">Build your own Telegram bots without coding.</p>
         <hr className="my-4" />
         <p>Create interactive bots, define commands, and design conversation flows with our easy-to-use interface.</p>

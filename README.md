@@ -1,6 +1,6 @@
-# Microgram - Interactive Telegram Bot Builder Platform
+# Bot-Forge - Interactive Telegram Bot Builder Platform
 
-Microgram is a microservice-based application that allows users to create, configure, and deploy Telegram bots through an interactive web interface. The platform enables users to define bot commands, create conversation flows, and deploy bots without writing any code.
+Bot-Forge is a microservice-based application that allows users to create, configure, and deploy Telegram bots through an interactive web interface. The platform enables users to define bot commands, create conversation flows, and deploy bots without writing any code.
 
 ## Architecture Overview
 
@@ -31,8 +31,8 @@ Services communicate with each other through HTTP REST APIs. In a production env
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/microgram.git
-   cd microgram
+   git clone https://github.com/queenofmadhouse/Bot-Forge
+   cd Bot-Forge
    ```
 
 2. Install backend dependencies:
@@ -173,7 +173,7 @@ The application can be deployed using Docker and Docker Compose, which simplifie
 The application will be available at:
 - Frontend: http://localhost
 - API Gateway: http://localhost:3333
-- MongoDB: mongodb://localhost:27017/microgram
+- MongoDB: mongodb://localhost:27017/botforge
 
 ### React Client Development
 
@@ -228,13 +228,13 @@ The application uses MongoDB for data storage. The MongoDB connection is configu
 The MongoDB connection is configured in the `.env` file:
 
 ```
-MONGO_URI=mongodb://localhost:27017/microgram
+MONGO_URI=mongodb://localhost:27017/botforge
 ```
 
 For Docker deployment, the MongoDB URI should be:
 
 ```
-MONGO_URI=mongodb://mongodb:27017/microgram
+MONGO_URI=mongodb://mongodb:27017/botforge
 ```
 
 ### MongoDB Connection Troubleshooting
@@ -246,12 +246,12 @@ If you encounter MongoDB connection issues, try the following:
    - For Docker: `docker ps | grep mongodb` to check if the MongoDB container is running
 
 2. **Check MongoDB connection**:
-   - For local development: `mongo mongodb://localhost:27017/microgram` to connect to MongoDB directly
-   - For Docker: `docker exec -it microgram-mongodb mongo` to connect to MongoDB inside the container
+   - For local development: `mongo mongodb://localhost:27017/botforge` to connect to MongoDB directly
+   - For Docker: `docker exec -it botforge-mongodb mongo` to connect to MongoDB inside the container
 
 3. **Check MongoDB logs**:
    - For local development: Check MongoDB logs in the system log directory
-   - For Docker: `docker logs microgram-mongodb` to check MongoDB container logs
+   - For Docker: `docker logs botforge-mongodb` to check MongoDB container logs
 
 4. **Increase connection timeouts**:
    - The DB Service is configured with increased timeouts to handle temporary connection issues
