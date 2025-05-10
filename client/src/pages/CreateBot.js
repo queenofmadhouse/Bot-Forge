@@ -32,8 +32,7 @@ const CreateBot = () => {
 
       const response = await createBot(botName);
 
-      // Navigate to the new bot's details page
-      navigate(`/bot/${response.data._id}`);
+      navigate(`/bot/${response._id}`);
     } catch (error) {
       console.error('Create bot error:', error);
       setError('Failed to create bot. Please try again.');
