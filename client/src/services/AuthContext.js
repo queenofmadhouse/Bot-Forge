@@ -88,11 +88,12 @@ export function AuthProvider({ children }) {
     setCurrentUser(null);
   };
 
-  const createBot = async (name) => {
+  const createBot = async (name, token) => {
     try {
 
       const response = await axios.post('/api/bot-builder', {
         name: name,
+        token: token,
         ownerId: currentUser._id
       }, {
         headers: {

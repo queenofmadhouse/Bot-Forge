@@ -38,18 +38,19 @@ app.get('/health', (req, res) => {
 // Create a new bot
 app.post('/', async (req, res) => {
   try {
-    const { name, ownerId } = req.body;
+    const { name, ownerId, token } = req.body;
+    console.log(`[Bot Builder Service] Create bot request received for bot: ${name} by user: ${ownerId}`);
 
     // Validate input
-    if (!name || !ownerId) {
+    if (!name || !ownerId || !token) {
       console.log(`[Bot Builder Service] Validation failed: Missing required fields for bot: ${name} by user: ${ownerId}`);
-      return res.status(400).json({ error: 'Bot name and owner ID are required' });
+      return res.status(400).json({ error: 'Bot name, owner ID and token are required' });
     }
 
-    // Create new bot with default commands
+    // Create a new bot with default commands
     const newBot = {
       name,
-      token: `telegram-token-${Date.now()}`, // TODO: use real token
+      token,
       ownerId,
       commands: [
         {

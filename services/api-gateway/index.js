@@ -74,6 +74,7 @@ app.use('/api/bot-builder', async (req, res) => {
       url: `${BOT_BUILDER_SERVICE}${botBuilderServicePath}`,
       data: {
         ownerId: req.body.ownerId,
+        token: req.body.token,
         name: req.body.name,
       },
       headers: req.headers

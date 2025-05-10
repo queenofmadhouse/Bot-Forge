@@ -5,6 +5,7 @@ import { useAuth } from '../services/AuthContext';
 
 const CreateBot = () => {
   const [botName, setBotName] = useState('');
+  const [botToken, setBotToken] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -26,11 +27,16 @@ const CreateBot = () => {
       return;
     }
 
+    if (!botToken.trim()) {
+      setError('Bot token is required');
+      return;
+    }
+
     try {
       setError('');
       setLoading(true);
 
-      const response = await createBot(botName);
+      const response = await createBot(botName, botToken);
 
       navigate(`/bot/${response._id}`);
     } catch (error) {
@@ -57,6 +63,16 @@ const CreateBot = () => {
             value={botName}
             onChange={(e) => setBotName(e.target.value)}
             required 
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBotToken">
+          <Form.Label>Bot token</Form.Label>
+          <Form.Control
+              type="text"
+              value={botToken}
+              onChange={(e) => setBotToken(e.target.value)}
+              required
           />
         </Form.Group>
 
