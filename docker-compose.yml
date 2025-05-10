@@ -1,0 +1,131 @@
+version: '3.8'
+
+services:
+  # MongoDB service
+  mongodb:
+    image: mongo:latest
+    container_name: microgram-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=microgram
+    networks:
+      - microgram-network
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: microgram-api-gateway
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - USER_SERVICE_URL=http://user-service:3001
+      - BOT_BUILDER_SERVICE_URL=http://bot-builder:3002
+      - BOT_RUNTIME_SERVICE_URL=http://bot-runtime:3003
+      - DB_SERVICE_URL=http://db-service:3004
+    depends_on:
+      - user-service
+      - bot-builder
+      - bot-runtime
+      - db-service
+    command: node services/api-gateway/index.js
+    networks:
+      - microgram-network
+
+  # User Service
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: microgram-user-service
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - USER_SERVICE_PORT=3001
+      - DB_SERVICE_URL=http://db-service:3004
+      - JWT_SECRET=your-secret-key
+    depends_on:
+      - db-service
+    command: node services/user-service/index.js
+    networks:
+      - microgram-network
+
+  # Bot Builder Service
+  bot-builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: microgram-bot-builder
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - BOT_BUILDER_PORT=3002
+      - DB_SERVICE_URL=http://db-service:3004
+    depends_on:
+      - db-service
+    command: node services/bot-builder/index.js
+    networks:
+      - microgram-network
+
+  # Bot Runtime Service
+  bot-runtime:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: microgram-bot-runtime
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - BOT_RUNTIME_PORT=3003
+      - DB_SERVICE_URL=http://db-service:3004
+    depends_on:
+      - db-service
+    command: node services/bot-runtime/index.js
+    networks:
+      - microgram-network
+
+  # Database Service
+  db-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: microgram-db-service
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - DB_SERVICE_PORT=3004
+      - MONGO_URI=mongodb://mongodb:27017/microgram
+    depends_on:
+      - mongodb
+    command: node services/db-service/index.js
+    networks:
+      - microgram-network
+
+  # Client (React frontend)
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: microgram-client
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - microgram-network
+
+networks:
+  microgram-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:

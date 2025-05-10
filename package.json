@@ -1,0 +1,36 @@
+{
+  "name": "microgram",
+  "version": "1.0.0",
+  "description": "Interactive Telegram Bot Builder Platform",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "gateway": "node services/api-gateway/index.js",
+    "user-service": "node services/user-service/index.js",
+    "bot-builder": "node services/bot-builder/index.js",
+    "bot-runtime": "node services/bot-runtime/index.js",
+    "db-service": "node services/db-service/index.js",
+    "client": "cd client && npm start",
+    "client-build": "cd client && npm run build",
+    "client-install": "cd client && npm install",
+    "dev-full": "concurrently \"npm run dev\" \"npm run client\""
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^6.0.12",
+    "axios": "^0.24.0",
+    "dotenv": "^10.0.0",
+    "cors": "^2.8.5",
+    "body-parser": "^1.19.0",
+    "telegraf": "^4.4.2",
+    "jsonwebtoken": "^8.5.1",
+    "bcryptjs": "^2.4.3",
+    "amqplib": "^0.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.14",
+    "concurrently": "^7.0.0"
+  }
+}
