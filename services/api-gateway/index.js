@@ -19,7 +19,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
-const PORT = process.env.GATEWAY_PORT || 3000;
+const PORT = process.env.GATEWAY_PORT || 3333;
 
 // Middleware
 app.use(cors());
@@ -33,7 +33,7 @@ app.use((req, res, next) => {
 
 // Service endpoints
 const USER_SERVICE = process.env.USER_SERVICE_URL;
-const BOT_BUILDER_SERVICE = process.env.BOT_BUILDER_SERVICE_URL;
+const BOT_BUILDER_SERVICE = process.env.BOT_BUILDER_SERVICE_URL || "http://localhost:3002";
 const BOT_RUNTIME_SERVICE = process.env.BOT_RUNTIME_SERVICE_URL;
 
 // Health check endpoint
@@ -47,11 +47,11 @@ app.use('/api/users', async (req, res) => {
     console.log(`[API Gateway] User service request: ${req.method} ${req.url}`);
     const userServicePath = req.url;
     console.log(`[API Gateway] Forwarding to: ${USER_SERVICE}${userServicePath}`);
+
     const response = await axios({
       method: req.method,
       url: `${USER_SERVICE}${userServicePath}`,
-      data: req.body,
-      headers: req.headers
+      data: req.body
     });
     res.status(response.status).json(response.data);
   } catch (error) {
@@ -69,20 +69,18 @@ app.use('/api/bot-builder', async (req, res) => {
     console.log(`[API Gateway] Bot builder service request: ${req.url}`);
     const botBuilderServicePath = req.url;
     console.log(`[API Gateway] Forwarding to: ${BOT_BUILDER_SERVICE}${botBuilderServicePath}`);
+    const forwardHeaders = { ...req.headers };
+    delete forwardHeaders['host'];
+    delete forwardHeaders['content-length'];  // ключевой момент!
+
     const response = await axios({
-      method: req.method,
-      url: `${BOT_BUILDER_SERVICE}${botBuilderServicePath}`,
-      data: {
-        ownerId: req.body.ownerId,
-        token: req.body.token,
-        name: req.body.name,
-      },
-      headers: req.headers
+      method:  req.method,
+      url:     `${BOT_BUILDER_SERVICE}${req.url}`,
+      data:    req.body
     });
     res.status(response.status).json(response.data);
   } catch (error) {
     console.error('[API Gateway] Bot builder service error:', error.message);
-    console.error('[API Gateway] Error details:', error.response?.data || error.message);
     res.status(error.response?.status || 500).json({
       error: 'Bot builder service error',
       message: error.response?.data || error.message
@@ -99,8 +97,7 @@ app.use('/api/bot-runtime', async (req, res) => {
     const response = await axios({
       method: req.method,
       url: `${BOT_RUNTIME_SERVICE}${botRuntimeServicePath}`,
-      data: req.body,
-      headers: req.headers
+      data: req.body
     });
     res.status(response.status).json(response.data);
   } catch (error) {

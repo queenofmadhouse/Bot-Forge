@@ -99,6 +99,8 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(`[User Service] Login request received; email: ${email}, password: ${password}`);
+
 
     // Validate input
     if (!email || !password) {

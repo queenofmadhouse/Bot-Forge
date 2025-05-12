@@ -35,6 +35,10 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', service: 'Bot Builder Service' });
 });
 
+app.post('/test/:id', (req, res) => {
+  res.status(200).json({ message: 'Bot Builder Service is running (post)' });
+});
+
 // Create a new bot
 app.post('/', async (req, res) => {
   try {
@@ -149,32 +153,27 @@ app.put('/:botId', async (req, res) => {
   }
 });
 
-// Add a command to a bot
-app.post('/:botId/commands', async (req, res) => {
+app.post('/commands/:botId', async (req, res) => {
   try {
+    console.log(`[Bot Builder Service] Add command request received: ${req.method} ${req.url}`)
     const { botId } = req.params;
     const { name, description, response } = req.body;
 
-    // Validate input
     if (!name || !description || !response) {
       return res.status(400).json({ error: 'Command name, description, and response are required' });
     }
 
-    // First, get the bot from the database
     try {
       const botResponse = await axios.get(`${DB_SERVICE}/bots/${botId}`);
       const bot = botResponse.data;
 
-      // Check if command already exists
       if (bot.commands && bot.commands.some(cmd => cmd.name === name)) {
         return res.status(409).json({ error: 'Command already exists' });
       }
 
-      // Add command to bot
       const newCommand = { name, description, response };
       const commands = bot.commands ? [...bot.commands, newCommand] : [newCommand];
 
-      // Update bot in database
       const updateResponse = await axios.put(`${DB_SERVICE}/bots/${botId}`, { commands });
       const updatedBot = updateResponse.data;
 
@@ -192,23 +191,19 @@ app.post('/:botId/commands', async (req, res) => {
   }
 });
 
-// Add a flow to a bot
 app.post('/:botId/flows', async (req, res) => {
   try {
     const { botId } = req.params;
     const { name, trigger, steps } = req.body;
 
-    // Validate input
     if (!name || !trigger || !steps || !Array.isArray(steps) || steps.length === 0) {
       return res.status(400).json({ error: 'Flow name, trigger, and steps are required' });
     }
 
-    // First, get the bot from the database
     try {
       const botResponse = await axios.get(`${DB_SERVICE}/bots/${botId}`);
       const bot = botResponse.data;
 
-      // Add flow to bot
       const newFlow = {
         id: `flow-${Date.now()}`,
         name,
@@ -217,7 +212,6 @@ app.post('/:botId/flows', async (req, res) => {
       };
       const flows = bot.flows ? [...bot.flows, newFlow] : [newFlow];
 
-      // Update bot in database
       const updateResponse = await axios.put(`${DB_SERVICE}/bots/${botId}`, { flows });
       const updatedBot = updateResponse.data;
 
@@ -235,12 +229,10 @@ app.post('/:botId/flows', async (req, res) => {
   }
 });
 
-// Deploy a bot to the runtime service
 app.post('/:botId/deploy', async (req, res) => {
   try {
     const { botId } = req.params;
 
-    // First, get the bot from the database
     try {
       const botResponse = await axios.get(`${DB_SERVICE}/bots/${botId}`);
       const bot = botResponse.data;
@@ -266,7 +258,6 @@ app.post('/:botId/deploy', async (req, res) => {
   }
 });
 
-// Start the server
 app.listen(PORT, () => {
   console.log(`Bot Builder Service running on port ${PORT}`);
 });

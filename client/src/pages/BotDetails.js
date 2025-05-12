@@ -10,34 +10,29 @@ const BotDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
-  // Command modal state
   const [showCommandModal, setShowCommandModal] = useState(false);
   const [commandName, setCommandName] = useState('');
   const [commandDescription, setCommandDescription] = useState('');
   const [commandResponse, setCommandResponse] = useState('');
   const [commandError, setCommandError] = useState('');
   const [commandLoading, setCommandLoading] = useState(false);
-  
+
+  const { fetchBotDetails } = useAuth();
+  const { addCommand } = useAuth();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect if not logged in
     if (!currentUser) {
       navigate('/login');
       return;
     }
     
-    // Fetch bot details
-    const fetchBotDetails = async () => {
+    const fetchDetails = async () => {
       try {
-        const response = await axios.get(`/api/bot-builder/${botId}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        
-        setBot(response.data);
+        const response = await fetchBotDetails(botId)
+
+        setBot(response);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching bot details:', error);
@@ -46,10 +41,9 @@ const BotDetails = () => {
       }
     };
     
-    fetchBotDetails();
+    fetchDetails();
   }, [botId, currentUser, navigate]);
 
-  // Handle command modal
   const handleCloseCommandModal = () => {
     setShowCommandModal(false);
     setCommandName('');
@@ -60,7 +54,6 @@ const BotDetails = () => {
   
   const handleShowCommandModal = () => setShowCommandModal(true);
   
-  // Add command
   const handleAddCommand = async () => {
     if (!commandName || !commandDescription || !commandResponse) {
       setCommandError('All fields are required');
@@ -70,21 +63,14 @@ const BotDetails = () => {
     try {
       setCommandError('');
       setCommandLoading(true);
+
+      console.log(botId, commandName, commandDescription, commandResponse);
+
+      const response = await addCommand(botId, commandName, commandDescription, commandResponse);
       
-      const response = await axios.post(`/api/bot-builder/${botId}/commands`, {
-        name: commandName,
-        description: commandDescription,
-        response: commandResponse
-      }, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
-      // Update bot state with a new command
       setBot({
         ...bot,
-        commands: [...bot.commands, response.data]
+        commands: [...bot.commands, response]
       });
       
       handleCloseCommandModal();
@@ -96,7 +82,6 @@ const BotDetails = () => {
     }
   };
   
-  // Deploy bot
   const handleDeployBot = async () => {
     try {
       const response = await axios.post(`/api/bot-builder/${botId}/deploy`, {}, {
@@ -105,7 +90,6 @@ const BotDetails = () => {
         }
       });
       
-      // Update bot state with deployed status
       setBot(response.data.bot);
       alert('Bot deployed successfully!');
     } catch (error) {

@@ -5,3 +5,5 @@ yarn.lock
 node_modules
 build
 package-lock.json
+.http-client.private.env.json
+http
